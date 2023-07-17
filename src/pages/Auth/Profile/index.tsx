@@ -1,39 +1,85 @@
-import React, { useState } from "react";
-import { TouchableOpacity, View, Text, TextInput } from "react-native";
-import { styles } from "./styles";
-import { MaterialIcons } from '@expo/vector-icons';
-import { auth } from "../../../services/firebase/firebase";
-import { AntDesign } from '@expo/vector-icons';
+import { TouchableOpacity, View, Text, TextInput, Image, ActivityIndicator, Pressable, ToastAndroid } from "react-native";
 import { logout } from "../../../services/firebase/authentication";
+import { auth, db } from "../../../services/firebase/firebase";
+import { MaterialIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { AntDesign } from '@expo/vector-icons';
+import React, { useState } from "react";
+import { styles } from "./styles";
+import { updateProfile } from "firebase/auth";
+import { collection, getDocs, query, updateDoc, where } from "firebase/firestore";
 
 export function Profile() {
-  const [username, setUsername] = useState(auth.currentUser?.displayName)
+  const name = auth.currentUser && auth.currentUser.displayName ? auth.currentUser.displayName : "";
+  const [username, setUsername] = useState(name)
   const [isEditable, setIsEditable] = useState<boolean>(false);
+  const [profileImage, setProfileImage] = useState(auth.currentUser?.photoURL);
+
+  const user = auth.currentUser;
+
+  async function saveInfo() {
+    if(!auth.currentUser) return;
+
+    setIsEditable(!isEditable)
+
+    if(!isEditable) return;
+    await updateProfile(auth.currentUser, {
+      displayName: username,
+      photoURL: profileImage,
+    });
+
+    const querySnapshot = await getDocs(query(collection(db, "users"), where("uid", "==", user!.uid)));
+
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0]
+
+       const res = await updateDoc(doc.ref, { name: username })
+       console.log(res)
+    }
+    
+    ToastAndroid.show("Alterações salvas com sucesso!", ToastAndroid.SHORT)
+  }
+
+  async function pickImage() {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [3, 3],
+      quality: 1,
+    });
+
+    if (result.canceled) return
+
+    const assets = result.assets[0];
+
+    setProfileImage(assets.uri);
+  };
 
   return (
     <>
       <View style={styles.main}>
 
+        {/* Header */}
+        <View style={styles.header}>
+          <MaterialIcons onPress={() => logout()} name="logout" size={24} color="#c20000" />
+          <Text style={styles.headerTitle}>Editar perfil</Text>
+          <AntDesign onPress={saveInfo} name={isEditable ? "check" : "edit"} size={24} color={isEditable ? "#0296E5" :"gray"} />
+        </View>
+
         {/* Profile Info */}
-        <TextInput editable={isEditable} style={{ ...styles.inputName, color: isEditable ? "white" : "#F0F0F0" }} placeholder="Nome" value={username ? username : ""} onChangeText={setUsername} />
+        <View style={styles.containerImage}>
+          <Pressable disabled={!isEditable} style={styles.imageButton} onPress={pickImage} >
+            {profileImage ? (
+              <Image style={styles.profileImage} source={{
+                uri: profileImage
+              }} />
+            ) : (
+              <ActivityIndicator size={100} color="#0296e5" />
+            )}
+          </Pressable>
+        </View>
 
-        {isEditable ? (
-          <TouchableOpacity onPress={() => setIsEditable(!isEditable)} style={styles.edit}>
-            <Text style={{ ...styles.textButton, color: "#0296E5" }}>Salvar Alterações</Text>
-            <AntDesign name="check" size={24} color="#0296E5" />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={() => setIsEditable(!isEditable)} style={styles.edit}>
-            <Text style={{ ...styles.textButton, color: "gray" }}>Editar Perfil</Text>
-            <AntDesign name="edit" size={24} color="gray" />
-          </TouchableOpacity>
-        )}
-
-        {/* Logout Button */}
-        <TouchableOpacity onPress={() => logout()} style={styles.logout}>
-          <MaterialIcons name="logout" size={28} color="#c20000" />
-          <Text style={{ ...styles.textButton, color: "#c20000" }}>Sair</Text>
-        </TouchableOpacity>
+        <TextInput placeholderTextColor="gray" editable={isEditable} style={{ ...styles.inputName, color: isEditable ? "white" : "#F0F0F0" }} placeholder="Nome" value={username ? username : ""} onChangeText={setUsername} />
       </View>
     </>
   )

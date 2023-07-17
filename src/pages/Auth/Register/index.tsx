@@ -12,7 +12,7 @@ export default function Register({ navigation }: any) {
   async function handleRegister() {
     try {
       const res = await registerEmailPass(name, email, password);
-      console.log(res)
+      ToastAndroid.show(res.message, ToastAndroid.SHORT)
       if (res.ok) navigation.navigate("Home")
     } catch (err: any) {
       ToastAndroid.show(err.message, ToastAndroid.SHORT);

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Image, View, Text, TouchableOpacity, ToastAndroid, Alert } from "react-native";
+import { Image, View, Text, TouchableOpacity, Alert, ToastAndroid } from "react-native";
 import { styles } from "./styles";
 import { Link } from '@react-navigation/native';
 import { InputIcon } from "../../../components/InputIcon";
@@ -12,10 +12,12 @@ export default function Login({ navigation }: any) {
   async function handleLogin() {
     try {
       const res = await loginEmailPass(email, password);
-      if(res.ok) navigation.navigate("Home")
+      if(res.ok) {
+        ToastAndroid.show(res.message, ToastAndroid.SHORT);
+        navigation.navigate("Home")
+      }
     } catch (err:any) {
-      Alert.alert(err.message);
-      console.log(err.message);
+      ToastAndroid.show(err.message, ToastAndroid.SHORT);
     }
   }
 

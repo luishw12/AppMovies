@@ -21,10 +21,27 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#242a32"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.luishw.firebaseAuth"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O aplicativo acessa suas fotos para permitir que você as compartilhe com seus amigos."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8cd4bdde-50ce-4abe-9858-caebadba77c4"
+      }
     }
   }
 }

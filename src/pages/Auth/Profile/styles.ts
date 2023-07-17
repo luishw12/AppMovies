@@ -1,26 +1,62 @@
-import { StyleSheet} from 'react-native';
+import { StatusBar, StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   main: {
     height: "100%",
     backgroundColor: "#242a32",
     flexDirection: "column",
+    paddingTop: StatusBar.currentHeight,
+    padding: 10,
+    gap: 30,
+  },
+
+  header: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    margin: 20,
+  },
+
+  headerTitle: {
+    textAlign: "center",
+    fontFamily: "Poppins-600",
+    color: "white",
+    fontSize: 26,
+  },
+
+  containerImage: {
+    flexDirection: "row",
     justifyContent: "center",
-    gap: 50
+    marginBottom: 20,
+  },
+
+  imageButton: {
+    overflow: "hidden",
+    borderRadius: 50,
+    height: 100,
+    width: 100,
+  },
+
+  profileImage: {
+    height: 100,
+    width: 100,
   },
 
   inputName: {
-    backgroundColor: "#67686D",
+    borderColor: "#67686D",
+    backgroundColor: "#323236",
+    borderWidth: 2,
     fontFamily: "Poppins-500",
-    fontSize: 16,
+    fontSize: 18,
     color: "white",
-    padding: 10,
-    width: 250,
-    elevation: 3,
+    textAlign: "center",
+    padding: 8,
+    width: "100%",
   },
 
   edit: {
+    width: "100%",
+    justifyContent: "center",
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
@@ -33,6 +69,8 @@ export const styles = StyleSheet.create({
   },
 
   logout: {
+    width: "100%",
+    justifyContent: "center",
     flexDirection: "row",
     alignItems: "center",
     gap: 10,

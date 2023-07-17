@@ -11,7 +11,7 @@ import { collection, addDoc } from "firebase/firestore";
 async function loginEmailPass(email: string, pass: string) {
   try {
     const res = await signInWithEmailAndPassword(auth, email, pass);
-    return { ok: true, res: res };
+    return { ok: true, message: "Login feito com sucesso!" };
   } catch (err: any) {
     return { ok: false, message: err.message };
   }
@@ -22,8 +22,12 @@ async function registerEmailPass(name: string, email: string, pass: string) {
     const res = await createUserWithEmailAndPassword(auth, email, pass);
     const user = res.user;
 
-    updateProfile(auth.currentUser!, {
+    const defaultPhotoUrl =
+      "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+
+    updateProfile(user, {
       displayName: name,
+      photoURL: defaultPhotoUrl,
     });
 
     await addDoc(collection(db, "users"), {
@@ -33,7 +37,7 @@ async function registerEmailPass(name: string, email: string, pass: string) {
       email,
       favorites: [],
     });
-    return { ok: true };
+    return { ok: true, message: "Conta criada com sucesso!" };
   } catch (error: any) {
     return { ok: false, message: error.message };
   }

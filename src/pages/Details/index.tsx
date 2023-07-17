@@ -6,7 +6,7 @@ import { api } from "../../services/api";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { auth, db } from "../../services/firebase/firebase";
 import { LoginAlert } from "../../components/LoginAlert";
-import { collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { collection, getDocs, query, updateDoc, where } from "firebase/firestore";
 
 export function Details({ route, navigation }: any) {
   const [loading, setLoading] = useState(true);
@@ -17,6 +17,18 @@ export function Details({ route, navigation }: any) {
   const { id } = route.params;
 
   const user = auth.currentUser;
+  
+  if (!user) {
+    return <LoginAlert navigation={navigation} />
+  }
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      await getFavorite();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     setIsFavorite(false);
@@ -68,10 +80,6 @@ export function Details({ route, navigation }: any) {
       await updateDoc(doc.ref, { favorites: updatedFavorites })
       getFavorite()
     }
-  }
-
-  if(!auth.currentUser) {
-    return <LoginAlert navigation={navigation} />
   }
 
   if (loading) {

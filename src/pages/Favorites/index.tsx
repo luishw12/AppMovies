@@ -2,6 +2,7 @@ import { Feather, FontAwesome } from '@expo/vector-icons';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from "react"
 import { View, Text, StatusBar, FlatList, ActivityIndicator } from "react-native"
+import { LoginAlert } from '../../components/LoginAlert';
 import { MovieContainer } from '../../components/MovieContainer';
 import { api } from '../../services/api';
 import { auth, db } from '../../services/firebase/firebase';
@@ -13,6 +14,10 @@ export function Favorites({ navigation }: any) {
   const [loading, setLoading] = useState<boolean>(true);
 
   const user = auth.currentUser;
+
+  if (!user) {
+    return <LoginAlert navigation={navigation} />
+  }
 
   async function getFavorite() {
     const querySnapshot = await getDocs(
@@ -54,7 +59,7 @@ export function Favorites({ navigation }: any) {
       {/* Header */}
       <View style={styles.header}>
         <FontAwesome onPress={() => navigation.navigate('Home')} style={{ padding: 15 }} name="angle-left" size={24} color="white" />
-        <Text style={styles.headerTitle}>Detalhes</Text>
+        <Text style={styles.headerTitle}>Favoritos</Text>
         <View>
           <Feather name="info" size={24} color="white" />
         </View>

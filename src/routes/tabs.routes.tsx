@@ -18,7 +18,7 @@ export function TabRoutes() {
   const [username, setUsername] = useState<string>("Login");
 
   onAuthStateChanged(auth, (user: any) => {
-    if(user.displayName) {
+    if(user && user.displayName) {
       setUsername(user.displayName.split(" ")[0]);
     } else {
       setUsername("Login");
